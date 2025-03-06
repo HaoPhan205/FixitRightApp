@@ -1,5 +1,5 @@
 import { View, Text, TextInput, TouchableOpacity, Image, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Used for the back button and eye icon
+import { Ionicons } from "@expo/vector-icons";
 import styles from "@/style/signinscreen";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,17 +40,16 @@ export default function SignIn() {
       <Text style={styles.label}>Password</Text>
       <View style={styles.passwordContainer}>
         <TextInput
-          style={styles.input}
+          style={styles.passwordInput}
           secureTextEntry={hidePassword}
           placeholder="******"
           placeholderTextColor="gray"
           onChangeText={(text)=>{setPasswordValue(text)}}
         />
-        <Pressable onPress={()=>{setHidePassword(!hidePassword)}}>
+        <Pressable style={styles.eyeIcon} onPress={()=>{setHidePassword(!hidePassword)}}>
           <Ionicons name={hidePassword?"eye-off":"eye"} size={20} color="black" />
         </Pressable>
       </View>
-
       <Pressable>
         <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </Pressable>
@@ -78,17 +77,18 @@ export default function SignIn() {
           <Image source={require("@/assets/images/facebook.png")} style={styles.iconImage} />
         </TouchableOpacity>
       </View>
-
-      <Text style={styles.signUpText}>
-        Don’t have an account? 
-        <Pressable
-          onPress={()=>{
-            goToSignup()
-          }}
-        >
-          <Text style={styles.signUpLink}>Sign Up</Text>
-        </Pressable>
-      </Text>
+      <View style={styles.signUpContainer}>
+          <Text style={styles.signUpText}>
+            Don’t have an account? 
+          </Text>
+          <Pressable
+              onPress={()=>{
+                goToSignup()
+              }}
+            >
+              <Text style={styles.signUpLink}>Sign Up</Text>
+            </Pressable>
+      </View>
     </View>
   );
 }
