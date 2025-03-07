@@ -1,12 +1,14 @@
-import { View, Text, TextInput, TouchableOpacity, Image, Pressable } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, Pressable, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styles from "@/style/signinscreen";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { loginAccountMecha } from "@/api/authenticate/authenticate";
-import { useRouter } from "expo-router";
+import { decodeAuthen, loginAccountMecha } from "@/api/authenticate/authenticate";
+import { useFocusEffect, useRouter } from "expo-router";
+import { checkAuthorization } from "@/service/authentication";
 
 export default function SignIn() {
+  const [login, setLogin] = useState(false)
   const [hidePassword,setHidePassword] = useState(true)
   const [mailValue, setMailValue] = useState("")
   const [passwordValue, setPasswordValue] = useState("")
@@ -15,16 +17,56 @@ export default function SignIn() {
     nav.replace("./login/signup")
   }
   const SignIn = async()=>{
-    var valueProp:authenProps = {
+    var valueProp:AuthenProps = {
       UserName: mailValue,
       Password: passwordValue
     }
-    const data:authenData = await loginAccountMecha(valueProp)
+    const data:AuthenData = await loginAccountMecha(valueProp)
     if(data){
-      //console.log("Login Success:", data.AccessToken);
-      await AsyncStorage.setItem(data.AccessToken,"access_token")
-      await AsyncStorage.setItem(data.RefreshToken,"refresh_token")
+      console.log("Login Success:", data.AccessToken);
+      await AsyncStorage.setItem("access_token",JSON.stringify(data))
+      const user:UserProps = await decodeAuthen()
+      if(user){
+        //await AsyncStorage.removeItem("access_token")
+        console.log(user)
+        await AsyncStorage.setItem("user_profile",JSON.stringify(user))
+        setLogin(!login)
+      }
     }
+    else{
+      errorLoginToast("Invalid Email or Password")
+    }
+  }
+  useFocusEffect(
+    useCallback(()=>{
+      const fetchData = async () => {
+        const data = await AsyncStorage.getItem("user_profile")
+        if(data){
+          const user:UserProps = JSON.parse(data)
+          const isMecha = checkAuthorization(user)
+          if(isMecha){
+            nav.push("./login/home/")
+          }
+          else{
+            errorLoginToast("You are not authorized")
+          }
+        }else{
+
+        }
+      }
+      fetchData();
+    },[login])
+  )
+
+  const errorLoginToast = (message:string)=>{
+    Alert.alert(
+      "Error",
+      message,
+      [
+        { text: "OK", onPress: () => console.log("Ok?") },
+      ],
+      { cancelable: false }
+    );
   }
   return (
     <View style={styles.container}>

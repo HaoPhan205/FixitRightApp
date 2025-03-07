@@ -1,20 +1,18 @@
 import axios from "axios"
+import { getHeaders } from "../token";
 const authenURL = process.env.EXPO_PUBLIC_API_AUTHENTICATIONS_URL
 
-export const loginAccountMecha = async (value: authenProps) => {
+export const loginAccountMecha = async (value: AuthenProps) => {
+  //console.log("Login Value:", value);
+  const headers = await getHeaders()
     try {
-      console.log("Sending Login Request:", authenURL);
-  
+      //console.log("Sending Login Request:", authenURL);
       const response = await axios.post(`${authenURL}/login`, value, {
-        headers: {
-          "Content-Type": "application/json",  
-        },
+        headers: headers
       });
   
-      console.log("Response:", response.data);
-  
       if (response.status === 200) {
-        console.log("Login Success:", response.data);
+        console.log("Login Data:", response.data.data);
         return response.data.data;
       } else {
         console.log("Login Failed with Status:", response.status);
@@ -26,3 +24,25 @@ export const loginAccountMecha = async (value: authenProps) => {
       return null;
     }
   };
+
+  export const decodeAuthen = async()=>{
+    const headers = await getHeaders()
+    console.log("headers: ",headers)
+    try {
+      const response = await axios.get(`${authenURL}/current-user`, {
+        headers: headers
+      });
+  
+      if (response.status === 200) {
+        //console.log("User Data Fetch Success:", response.data);
+        return response.data.data;
+      } else {
+        console.log("Login Failed with Status:", response.status);
+        return null;
+      }
+    } catch (error) {
+      const err = error as any;
+      console.error("Login Error:", err.response ? err.response.data : err);
+      return null;
+    }
+  }

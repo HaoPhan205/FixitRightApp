@@ -1,9 +1,9 @@
-interface authenProps {
-    UserName: string;
-    Password: string;
+interface AuthenProps {
+    "UserName": string;
+    "Password": string;
 }
 
-interface authenData {
-    AccessToken: string;
-    RefreshToken: string;
+interface AuthenData {
+    "AccessToken": string;
+    "RefreshToken": string;
 }

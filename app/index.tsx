@@ -1,12 +1,23 @@
 import { View, Text, Image, Pressable } from "react-native";
 import {styles} from "@/style/splashscreen";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function index() {
   const navigate = useRouter()
   const goNext = ()=>{
     navigate.push("./splashscreen2")
   }
+  useFocusEffect(useCallback(()=>{
+    const prevUser = async()=>{
+      const userExist = await AsyncStorage.getItem("user_profile")
+      if(userExist){
+        navigate.push("./login")
+      }
+    }
+    prevUser()
+  },[]))
   return (
     <View style={styles.container}>
 
