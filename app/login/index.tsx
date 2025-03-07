@@ -21,10 +21,10 @@ export default function SignIn() {
     }
     const data:authenData = await loginAccountMecha(valueProp)
     if(data){
+      //console.log("Login Success:", data.AccessToken);
       await AsyncStorage.setItem(data.AccessToken,"access_token")
       await AsyncStorage.setItem(data.RefreshToken,"refresh_token")
     }
-
   }
   return (
     <View style={styles.container}>
