@@ -1,9 +1,14 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Pressable } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Pressable, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // If using Expo; remove if not needed
 import styles from "@/style/register";
+import { useFocusEffect, useNavigation, useRouter } from "expo-router";
 
 export default function RegisterScreen() {
+  const nav = useRouter()
+  const returnPage = ()=>{
+    nav.replace("/login")
+  }
   // register Format
   const [user, setUser] = useState<UserRequestProps>({
     Fullname: "",
@@ -30,12 +35,10 @@ export default function RegisterScreen() {
 
   return (
     <View style={styles.container}>
-
-      <Pressable style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </Pressable>
-      <Text style={styles.title}>Register</Text>
-      <Text style={styles.subtitle}>Create Your Account</Text>
+        <Pressable onPress={returnPage} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </Pressable>
+      <Text style={styles.title}>Create Your Account</Text>
       <Text style={styles.label}>Full Name</Text>
       <TextInput
         style={styles.input}
@@ -68,8 +71,6 @@ export default function RegisterScreen() {
         value={user.Address}
         onChangeText={(text) => handleChange("Address", text)}
       />
-
-      {/* Username */}
       <Text style={styles.label}>Username</Text>
       <TextInput
         style={styles.input}

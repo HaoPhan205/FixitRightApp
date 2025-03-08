@@ -9,7 +9,13 @@ export default function _layout() {
         headerShown: false,
       }}
     >
-        
+        <Stack.Screen
+        name="signup"
+        options={{
+          title: "Register",
+          headerLeft: () => null, // Prevents default back button
+        }}
+      />
     </Stack>
 
    
