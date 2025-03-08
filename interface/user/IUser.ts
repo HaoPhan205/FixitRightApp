@@ -6,9 +6,19 @@ interface UserProps{
     IsVerified: boolean;
     Fullname: string;
     Gender: "Male" | "Female" | "Others";
-    Birthday: Date;
+    Birthday: string;
     UserName: string;
     Email: string;
     Balance: number;
     Roles: string[] | "guest";
   };
+
+  interface UserRequestProps{
+    Fullname: string,
+    Gender: "Male" | "Female" | "Others"
+    Birthday:string
+    Address: string,
+    UserName: string,
+    Password: string,
+    Email: string,
+  }
