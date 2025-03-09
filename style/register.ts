@@ -16,8 +16,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    top: 45,
-    left: 20,
+    top: "6%",
+    left: "2%",
   },
   title: {
     fontSize: 24,
@@ -50,6 +50,17 @@ const styles = StyleSheet.create({
     color: "black",
     marginBottom: 20,
   },
+  datePickerButton: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  datePickerText: {
+    fontSize: 16,
+    color: "black",
+  },
   passwordContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -73,6 +84,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
+    marginBottom: 20,
   },
   registerButtonText: {
     fontSize: 16,
