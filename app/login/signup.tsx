@@ -6,11 +6,12 @@ import styles from "@/style/register";
 import { useRouter } from "expo-router";
 import { ageValidation } from "@/service/validation";
 import { registerMechaAccount } from "@/api/authenticate/authenticate";
+import LoadingScreen from "@/component/loadingScreen";
 
 export default function RegisterScreen() {
   const nav = useRouter();
   const returnPage = () => nav.replace("/login");
-
+  const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState<UserRequestProps>({
     Fullname: "",
     Gender: "Male",
@@ -45,6 +46,8 @@ export default function RegisterScreen() {
   };
 
   const registerAccount = async() => {
+    setIsLoading(true)
+    if(ageValidation(user.Birthday))
     if (user.Password!==rePassword) {
       Alert.alert("Password Mismatch", "Passwords do not match");
       return;
@@ -62,9 +65,12 @@ export default function RegisterScreen() {
     } catch (error:any) {
       Alert.alert("Registration Failed", error);
     }
+    setIsLoading(false)
   }
 
   return (
+    <>
+    {isLoading?<LoadingScreen/>:null}
     <ScrollView style={styles.container}>
       <Pressable onPress={returnPage} style={styles.backButton}>
         <Ionicons name="arrow-back" size={24} color="black" />
@@ -118,5 +124,6 @@ export default function RegisterScreen() {
         <Text style={styles.registerButtonText}>Register</Text>
       </Pressable>
     </ScrollView>
+    </>
   );
 }

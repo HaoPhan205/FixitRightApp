@@ -6,17 +6,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { decodeAuthen, loginAccountMecha } from "@/api/authenticate/authenticate";
 import { useFocusEffect, useRouter } from "expo-router";
 import { checkAuthorization } from "@/service/authentication";
+import LoadingScreen from "@/component/loadingScreen";
 
 export default function SignIn() {
   const [login, setLogin] = useState(false)
   const [hidePassword,setHidePassword] = useState(true)
   const [mailValue, setMailValue] = useState("")
   const [passwordValue, setPasswordValue] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const nav = useRouter()
   const goToSignup = ()=>{
     nav.replace("./login/signup")
   }
   const SignIn = async()=>{
+    setIsLoading(true)
     var valueProp:AuthenProps = {
       UserName: mailValue,
       Password: passwordValue
@@ -36,6 +39,7 @@ export default function SignIn() {
     else{
       errorLoginToast("Invalid Email or Password")
     }
+    setIsLoading(false)
   }
   useFocusEffect(
     useCallback(()=>{
@@ -69,6 +73,8 @@ export default function SignIn() {
     );
   }
   return (
+    <>
+    {isLoading?<LoadingScreen/>:null}
     <View style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
       <Text style={styles.subtitle}>Welcome Back, Mechanic!</Text>
@@ -132,5 +138,6 @@ export default function SignIn() {
             </Pressable>
       </View>
     </View>
+    </>
   );
 }

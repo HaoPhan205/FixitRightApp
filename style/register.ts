@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "absolute",
-    top: "6%",
+    top: "5%",
     left: "2%",
   },
   title: {
