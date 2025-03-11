@@ -3,6 +3,7 @@ import {styles} from "@/style/splashscreen";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function index() {
   const navigate = useRouter()
@@ -19,8 +20,9 @@ export default function index() {
     prevUser()
   },[]))
   return (
-    <View style={styles.container}>
-
+        <LinearGradient
+        style={styles.container}
+        colors={['#DFF2EB', '#4A628A']} >
       <View style={styles.imageContainer}>
         <Image
           source={require("@/assets/images/splashscreen1.png")} 
@@ -46,6 +48,6 @@ export default function index() {
           />
         ))}
       </View>
-    </View>
+      </LinearGradient>
   );
 }

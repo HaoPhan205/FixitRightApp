@@ -1,6 +1,7 @@
 import { View, Text, Image, Pressable } from "react-native";
 import {styles} from "@/style/splashscreen";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function locationscreen() {
   const navigate = useRouter()
@@ -12,7 +13,9 @@ export default function locationscreen() {
         goNext()
       }
       return (
-        <View style={styles.container}>
+       <LinearGradient
+               style={styles.container}
+               colors={['#DFF2EB', '#4A628A']} >
     
           <View style={styles.imageContainer}>
             <Image
@@ -34,6 +37,6 @@ export default function locationscreen() {
           >
             <Text style={styles.skipButton}>Skip For Now</Text>
           </Pressable>
-        </View>
+        </LinearGradient>
       );
 }

@@ -1,6 +1,7 @@
 import { View, Text, Image, Pressable } from "react-native";
 import {styles} from "@/style/splashscreen";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function splashscreen3() {
     const navigate = useRouter()
@@ -8,8 +9,9 @@ export default function splashscreen3() {
       navigate.push("./locationscreen")
     }
     return (
-      <View style={styles.container}>
-  
+        <LinearGradient
+                         style={styles.container}
+                         colors={['#DFF2EB', '#4A628A']} >
         <View style={styles.imageContainer}>
           <Image
             source={require("@/assets/images/splashscreen3.png")} 
@@ -36,6 +38,6 @@ export default function splashscreen3() {
             />
           ))}
         </View>
-      </View>
+      </LinearGradient>
     );
 }
