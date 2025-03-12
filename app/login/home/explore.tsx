@@ -1,6 +1,10 @@
 import React from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 
 export default function explore() {
-  return <View>explore</View>;
+  return (
+    <View>
+      <Text>explore</Text>
+    </View>
+  );
 }
