@@ -3,6 +3,7 @@ import { View, Text, Pressable,ScrollView, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { Svg, Path } from 'react-native-svg'; 
 import {styles} from "@/style/homepage"
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomePage() {
   const chartData = {
@@ -41,9 +42,12 @@ const chartConfig = {
 };
 
   return (
-    <ScrollView style={styles.container}>
+    <LinearGradient
+    style={styles.container}
+    colors={[ '#4A628A','#DFF2EB']} >
+      <ScrollView>
+    <View style={styles.elementContainer}>
     <Text style={styles.title}>Earnings by day</Text>
-
     <Pressable style={styles.button}>
       <Text style={styles.buttonText}>View by Day</Text>
       <Svg // Using react-native-svg for the icon
@@ -91,6 +95,8 @@ const chartConfig = {
         style={styles.chart}
       />
     </View>
+    </View>
   </ScrollView>
+  </LinearGradient>
   )
 }

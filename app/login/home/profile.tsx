@@ -28,12 +28,12 @@ export default function profile() {
           const user:UserProps = JSON.parse(data)
           //console.log(user)
           const userExist = await getMechaAccount(user.Id)
-        if(userExist){
-          setUser(userExist)
-        }
-        if(!userExist){
-          failedFetchData
-        }
+          if(userExist!=null){
+              setUser(userExist)
+            }
+            else{
+              failedFetchData()
+            }
         }
         else{
           failedFetchData()
@@ -45,12 +45,12 @@ export default function profile() {
 
     const failedFetchData = ()=>{
       Alert.alert("User Data Fetching Failed!","Please Try Login Again")
-      nav.replace("./login")
+      nav.replace("../login")
     }
 
   return (
     <>
-    {isLoading??<LoadingScreen/>}
+    {isLoading?<LoadingScreen/>:null}
     <View style={styles.container}>
          <LinearGradient
         colors={['#DFF2EB', '#4A628A']} // Light Blue gradient
