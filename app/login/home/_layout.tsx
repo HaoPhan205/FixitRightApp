@@ -1,12 +1,18 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Tabs } from 'expo-router'
-import {styles} from '@/style/tabs'
-import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { Tabs } from "expo-router";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-export default function _layout() {
+const tabIcons = {
+  home: "home-outline",
+  bookmark: "bookmark-outline",
+  explore: "compass-outline",
+  chat: "chatbubble-outline",
+  profile: "person-outline",
+};
+
+export default function Layout() {
   return (
-   <Tabs
+    <Tabs
       screenOptions={{
         headerShown:false,
         tabBarStyle:styles.tabBar,
