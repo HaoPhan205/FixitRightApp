@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import Ionicons from "react-native-vector-icons/Ionicons";
-
+import Ionicons from '@expo/vector-icons/Ionicons';
+import {styles} from "@/style/tabs"
 const tabIcons = {
   home: "home-outline",
   bookmark: "bookmark-outline",

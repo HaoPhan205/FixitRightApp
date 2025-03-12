@@ -55,7 +55,7 @@ const chartConfig = {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={styles.icon}
+        color={styles.icon.color}
       >
         <Path d="M19 9l-7 7-7-7" />
       </Svg>
@@ -72,7 +72,7 @@ const chartConfig = {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        style={styles.icon}
+        color={styles.icon.color}
       >
         <Path d="M19 9l-7 7-7-7" />
       </Svg>
@@ -83,7 +83,9 @@ const chartConfig = {
         data={chartData}
         width={Dimensions.get('window').width - 40} // from react-native
         height={220}
+
         yAxisLabel=""
+        yAxisSuffix=""
         yAxisInterval={1}
         chartConfig={chartConfig}
         style={styles.chart}
