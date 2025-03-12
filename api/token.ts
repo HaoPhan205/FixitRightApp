@@ -7,7 +7,7 @@ export const getToken = async ()=> {
     const data = await AsyncStorage.getItem("access_token");
     if(data){
       const token:AuthenData = JSON.parse(data);
-      console.log("Fetch Token:", token);
+      //console.log("Fetch Token:", token);
       return token; 
     }
     return null;
@@ -20,9 +20,7 @@ export const getToken = async ()=> {
 export const getHeaders = async () => {
   try {
     const token:AuthenData|null = await getToken();
-
-    console.log("Get Token:", token); 
-
+    //console.log("Get Token:", token); 
     if (!token) {
       console.warn("No token found in storage");
       return { "Content-Type": "application/json" };

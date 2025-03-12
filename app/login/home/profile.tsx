@@ -1,21 +1,56 @@
 
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useRouter } from 'expo-router'
-import React from 'react';
-import { View, Text, Pressable, Image, ScrollView } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router'
+import React, { useCallback, useState } from 'react';
+import { View, Text, Pressable, Image, ScrollView, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import {styles} from "@/style/profile"
 import { LinearGradient } from 'expo-linear-gradient';
+import LoadingScreen from '@/component/loadingScreen';
+import { getMechaAccount } from '@/api/user/user';
 
 
 export default function profile() {
+  const [isLoading,setIsLoading] = useState(false)
+  const [user, setUser] = useState<UserProps>()
     const nav = useRouter()
     const logout = async()=>{
         await AsyncStorage.removeItem("user_profile")
         nav.dismissAll()
     }
+
+    useFocusEffect(useCallback(()=>{
+      const prevUser = async()=>{
+        setIsLoading(true)
+        const data = await AsyncStorage.getItem("user_profile")
+        if(data){
+          const user:UserProps = JSON.parse(data)
+          //console.log(user)
+          const userExist = await getMechaAccount(user.Id)
+        if(userExist){
+          setUser(userExist)
+        }
+        if(!userExist){
+          failedFetchData
+        }
+        }
+        else{
+          failedFetchData()
+        }
+        setIsLoading(false)
+      }
+      prevUser()
+    },[]))
+
+    const failedFetchData = ()=>{
+      Alert.alert("User Data Fetching Failed!","Please Try Login Again")
+      nav.replace("./login")
+    }
+
   return (
+    <>
+    {isLoading??<LoadingScreen/>}
     <View style={styles.container}>
          <LinearGradient
         colors={['#DFF2EB', '#4A628A']} // Light Blue gradient
@@ -24,13 +59,13 @@ export default function profile() {
     <View style={styles.profileSection}>
       <View style={styles.profileImageContainer}>
         <View style={styles.profileImage}>
-          <Ionicons name="person-circle-outline" size={80} color="#ADD8E6" />
+          <Image source={{uri:user?.Avatar}} style={styles.profileImage} />
           <Pressable style={styles.editIcon}>
             <Ionicons name="pencil" size={16} color="black" />
           </Pressable>
         </View>
       </View>
-      <Text style={styles.profileName}>Name Here</Text>
+      <Text style={styles.profileName}>{user?.Fullname}</Text>
     </View>
 
 
@@ -92,5 +127,6 @@ export default function profile() {
     </ScrollView>
     </LinearGradient>
   </View>
+  </>
   )
 }
