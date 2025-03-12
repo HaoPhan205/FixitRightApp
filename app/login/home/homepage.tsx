@@ -7,17 +7,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomePage() {
   const chartData = {
-  labels: ['12\nMON', '13\nTUE', '14\nWED', '15\nTHU', '16\nFRI', '17\nSAT', '18\nSUN'],
+  labels: ['12', '13', '14', '15', '16', '17', '18'],
   datasets: [
     {
-      data: [1000000, 15000000, 10000000, 5000000, 2000000, 7000000, 16000000],
+      data: [90000, 150000, 200000, 50000, 20000, 100000, 160000],
     },
   ],
 };
 const chartConfig = {
-  backgroundColor: 'transparent',
-  backgroundGradientFrom: 'transparent',
-  backgroundGradientTo: 'transparent',
+  backgroundColor: 'white',
+  backgroundGradientFrom: 'white',
+  backgroundGradientTo: 'white',
   decimalPlaces: 0,
   color: (opacity = 1) => `rgba(62, 80, 144, ${opacity})`, // Match bar color
   labelColor: (opacity = 1) => `rgba(62, 80, 144, ${opacity})`, // Match label color
@@ -41,11 +41,8 @@ const chartConfig = {
   },
 };
 
-  return (
-    <LinearGradient
-    style={styles.container}
-    colors={[ '#4A628A','#DFF2EB']} >
-      <ScrollView>
+const BarChartComponent = (item:any)=>{
+  return(
     <View style={styles.elementContainer}>
     <Text style={styles.title}>Earnings by day</Text>
     <Pressable style={styles.button}>
@@ -87,7 +84,6 @@ const chartConfig = {
         data={chartData}
         width={Dimensions.get('window').width - 40} // from react-native
         height={220}
-
         yAxisLabel=""
         yAxisSuffix=""
         yAxisInterval={1}
@@ -96,6 +92,16 @@ const chartConfig = {
       />
     </View>
     </View>
+  )
+}
+
+  return (
+    <LinearGradient
+    style={styles.container}
+    colors={[ '#4A628A','#DFF2EB']} >
+    <ScrollView>
+      <BarChartComponent/>
+
   </ScrollView>
   </LinearGradient>
   )
