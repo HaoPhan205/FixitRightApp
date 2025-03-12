@@ -15,6 +15,10 @@ export default function Layout() {
     <Tabs
       screenOptions={{
         headerShown:true,
+        headerStyle: { backgroundColor: "#DFF2EB"},
+        headerTitleAlign: "center",
+        headerTitleContainerStyle: {},
+        headerTitleStyle: { fontSize: 24 },
         tabBarStyle:styles.tabBar,
         tabBarActiveTintColor: "#E1F2EC", // light blue
         tabBarInactiveTintColor: "white", // default
@@ -22,17 +26,20 @@ export default function Layout() {
    >
      <Tabs.Screen name="homepage" 
          options={{ tabBarLabel: 'Home',
+          headerTitle:"Home",
           tabBarIcon: ({ color }) => <Ionicons name="home" size={28} color={color} />,
 
          }}
      />
       <Tabs.Screen name="booking" 
          options={{ tabBarLabel: 'Booking',
+          headerTitle:"Booking",
           tabBarIcon: ({ color }) => <Ionicons name="bookmark" size={24}  color={color} />,
           }}
      />
      <Tabs.Screen name="chat" 
          options={{ tabBarLabel: 'Chat',
+          headerTitle:"Chat",
           tabBarIcon: ({ color }) => <Ionicons name="chatbox-ellipses" size={24}  color={color} />,
           }}
      />

@@ -4,8 +4,13 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f0f8ff', // Light blue background
-      padding: 20,
+      padding: 10,
+    },
+    elementContainer: {
+      flex: 1,
+      backgroundColor: 'lightblue', // dark blue background
+      padding: 10,
+      borderRadius: 10,
     },
     title: {
       fontSize: 20,

@@ -50,7 +50,7 @@ export default function profile() {
 
   return (
     <>
-    {isLoading??<LoadingScreen/>}
+    {isLoading?<LoadingScreen/>:null}
     <View style={styles.container}>
          <LinearGradient
         colors={['#DFF2EB', '#4A628A']} // Light Blue gradient
