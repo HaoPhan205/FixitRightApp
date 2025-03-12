@@ -14,13 +14,13 @@ export default function Layout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown:false,
+        headerShown:true,
         tabBarStyle:styles.tabBar,
         tabBarActiveTintColor: "#E1F2EC", // light blue
         tabBarInactiveTintColor: "white", // default
       }}
    >
-     <Tabs.Screen name="index" 
+     <Tabs.Screen name="homepage" 
          options={{ tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => <Ionicons name="home" size={28} color={color} />,
 
