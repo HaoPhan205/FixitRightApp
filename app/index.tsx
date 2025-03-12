@@ -22,8 +22,7 @@ export default function index() {
     }, [])
   );
   return (
-    <View style={styles.container}>
-
+    <LinearGradient style={styles.container} colors={["#DFF2EB", "#4A628A"]}>
       <View style={styles.imageContainer}>
         <Image
           source={require("@/assets/images/splashscreen1.png")}
@@ -47,6 +46,6 @@ export default function index() {
           />
         ))}
       </View>
-      </LinearGradient>
+    </LinearGradient>
   );
 }
