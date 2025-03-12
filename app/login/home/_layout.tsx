@@ -38,6 +38,7 @@ export default function Layout() {
      />
      <Tabs.Screen name="profile" 
          options={{ tabBarLabel: 'Profile',
+          headerShown:false,
           tabBarIcon: ({ color }) => <Ionicons name="person-circle-sharp" size={24}  color={color} />,
           }}
      />
