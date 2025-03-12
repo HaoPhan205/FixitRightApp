@@ -1,7 +1,7 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import Ionicons from "react-native-vector-icons/Ionicons";
-
+import Ionicons from '@expo/vector-icons/Ionicons';
+import {styles} from "@/style/tabs"
 const tabIcons = {
   home: "home-outline",
   bookmark: "bookmark-outline",
@@ -14,34 +14,34 @@ export default function Layout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: "#DFF2EB", height: 120 },
-        headerTitleAlign: "center",
-        headerTitleContainerStyle: {},
-        headerTitleStyle: { fontSize: 24 },
-        tabBarStyle: {
-          backgroundColor: "#4A628A",
-          height: 80,
-          borderRadius: 17,
-          paddingTop: 10,
-        },
-        tabBarLabelStyle: { fontSize: 12, color: "white" },
-        tabBarActiveTintColor: "white",
-        tabBarInactiveTintColor: "#DFF2EB",
+        headerShown:false,
+        tabBarStyle:styles.tabBar,
+        tabBarActiveTintColor: "#E1F2EC", // light blue
+        tabBarInactiveTintColor: "white", // default
       }}
-    >
-      {Object.entries(tabIcons).map(([name, icon]) => (
-        <Tabs.Screen
-          key={name}
-          name={name}
-          options={{
-            tabBarLabel: name.charAt(0).toUpperCase() + name.slice(1),
-            title: name.charAt(0).toUpperCase() + name.slice(1),
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name={icon} size={size} color={color} />
-            ),
+   >
+     <Tabs.Screen name="index" 
+         options={{ tabBarLabel: 'Home',
+          tabBarIcon: ({ color }) => <Ionicons name="home" size={28} color={color} />,
+
+         }}
+     />
+      <Tabs.Screen name="booking" 
+         options={{ tabBarLabel: 'Booking',
+          tabBarIcon: ({ color }) => <Ionicons name="bookmark" size={24}  color={color} />,
           }}
-        />
-      ))}
-    </Tabs>
-  );
+     />
+     <Tabs.Screen name="chat" 
+         options={{ tabBarLabel: 'Chat',
+          tabBarIcon: ({ color }) => <Ionicons name="chatbox-ellipses" size={24}  color={color} />,
+          }}
+     />
+     <Tabs.Screen name="profile" 
+         options={{ tabBarLabel: 'Profile',
+          tabBarIcon: ({ color }) => <Ionicons name="person-circle-sharp" size={24}  color={color} />,
+          }}
+     />
+
+   </Tabs>
+  )
 }
