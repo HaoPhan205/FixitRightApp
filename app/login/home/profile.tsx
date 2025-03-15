@@ -45,7 +45,8 @@ export default function profile() {
 
     const failedFetchData = ()=>{
       Alert.alert("User Data Fetching Failed!","Please Try Login Again")
-      nav.replace("../login")
+      AsyncStorage.removeItem("user_profile")
+      nav.replace("../../login")
     }
 
   return (
