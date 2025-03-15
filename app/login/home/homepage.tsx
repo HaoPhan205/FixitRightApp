@@ -3,6 +3,7 @@ import {ScrollView } from 'react-native';
 import {styles} from "@/style/homepage"
 import { LinearGradient } from 'expo-linear-gradient';
 import { BarChartComponent } from '@/component/CustomChart';
+import TaskBoard from '@/component/taskBoard';
 
 export default function HomePage() {
   const chartData = {
@@ -14,13 +15,15 @@ export default function HomePage() {
   ],
 };
   return (
+    <ScrollView>
     <LinearGradient
     style={styles.container}
     colors={[ '#4A628A','#DFF2EB']} >
-    <ScrollView>
-     
-
-  </ScrollView>
+    
+     <TaskBoard/>
+     <TaskBoard/>
+     <TaskBoard/>
   </LinearGradient>
+  </ScrollView>
   )
 }

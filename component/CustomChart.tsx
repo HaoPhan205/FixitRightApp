@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Dimensions } from 'react-native';
-import { BarChart, Grid } from 'react-native-svg-charts';
-import { Svg, Path, LinearGradient, Stop, Defs } from 'react-native-svg';
+import { BarChart } from 'react-native-gifted-charts';
+import { Svg, Path } from 'react-native-svg';
 import { styles } from "@/style/homepage";
 
 const chartWidth = Dimensions.get('window').width - 50;
@@ -12,7 +12,7 @@ const generateYLabels = (maxValue) => {
   const step = maxValue / (intervals - 1);
   return Array(intervals)
     .fill(0)
-    .map((_, i) => Math.round(i * step).toLocaleString());
+    .map((_, i) => Math.round(i * step).toLocaleString() + ' VND');
 };
 
 export const BarChartComponent = ({ item }) => {
@@ -21,10 +21,9 @@ export const BarChartComponent = ({ item }) => {
   const yLabels = generateYLabels(maxValue);
   const barData = dataValues.map((value, index) => ({
     value,
-    svg: {
-      fill: `url(#gradient-${index})`,
-    },
     label: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][index],
+    frontColor: '#2C3E50', // Base color for bars
+    gradientColor: '#3498DB', // Gradient end color
   }));
 
   return (
@@ -73,38 +72,30 @@ export const BarChartComponent = ({ item }) => {
                 key={index}
                 style={{ fontSize: 10, color: 'rgba(44, 62, 80, 1)', textAlign: 'right', paddingRight: 10 }}
               >
-                {label + ' VND'}
+                {label}
               </Text>
             ))}
           </View>
           {/* Bar Chart (50% width) */}
           <View style={{ width: halfWidth, height: 220 }}>
-            <Svg width={halfWidth} height={220}>
-              <Defs>
-                {barData.map((_, index) => (
-                  <LinearGradient key={index} id={`gradient-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                    <Stop offset="0%" stopColor="rgba(44, 62, 80, 0.9)" />
-                    <Stop offset="100%" stopColor="rgba(52, 152, 219, 0.7)" />
-                  </LinearGradient>
-                ))}
-              </Defs>
-              <BarChart
-                style={{ flex: 1 }}
-                data={barData}
-                svg={{ fill: 'url(#gradient-0)' }} // Default gradient
-                contentInset={{ top: 10, bottom: 10 }}
-                gridMin={0}
-                gridMax={maxValue}
-                yAccessor={({ item }) => item.value}
-                spacing={0.2}
-                gridProps={{
-                  stroke: '#dfe4ea',
-                  strokeWidth: 1,
-                }}
-              >
-                <Grid />
-              </BarChart>
-            </Svg>
+            <BarChart
+              data={barData}
+              width={halfWidth}
+              height={220}
+              barWidth={20}
+              noOfSections={4} // Adjust for 5 intervals (0 to max)
+              maxValue={maxValue}
+              yAxisLabelWidth={0} // Disable default y-axis labels
+              xAxisLabelTextStyle={{ fontSize: 10, color: 'rgba(44, 62, 80, 1)' }}
+              yAxisTextStyle={{ display: 'none' }} // Hide default y-axis text
+              showLine={true}
+              lineConfig={{
+                color: '#dfe4ea',
+                thickness: 1,
+              }}
+              isAnimated={true}
+              gradientDirection="vertical"
+            />
           </View>
         </View>
       </View>

@@ -24,7 +24,7 @@ export default function Layout() {
         tabBarInactiveTintColor: "white", // default
       }}
    >
-     {/* <Tabs.Screen name="homepage"  */}
+     <Tabs.Screen name="homepage" 
          options={{ tabBarLabel: 'Home',
           headerTitle:"Home",
           tabBarIcon: ({ color }) => <Ionicons name="home" size={28} color={color} />,
