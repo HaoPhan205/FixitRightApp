@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
     container: {
       flex: 1,
       padding: 10,
+      marginBottom: "10%",
     },
     elementContainer: {
       flex: 1,
@@ -40,6 +41,37 @@ export const styles = StyleSheet.create({
     },
     icon: {
       color: 'white'
-    }
+    },
+    buttonContainer: {
+      backgroundColor: '#DFF2EB', 
+      flexDirection: 'row', 
+      justifyContent: 'space-around',
+      padding: 10,
+      margin: 10,
+      borderRadius: 10,
+      elevation: 3, // Add shadow for Android
+      shadowColor: '#000', // Add shadow for iOS
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 3,
+    },
+    navbutton: {
+      backgroundColor: '#4A628A', // Match the darker color of the gradient for contrast
+      flexDirection: 'row', // Align icon and text in a row
+      alignItems: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      borderRadius: 8,
+      gap: 8, // Space between icon and text
+    },
+    buttonPressed: {
+      backgroundColor: '#3A4F73', // Slightly darker shade when pressed
+      opacity: 0.8,
+    },
+    navbuttonText: {
+      color: '#FFF',
+      fontSize: 16,
+      fontWeight: '600',
+    },
 
 })
