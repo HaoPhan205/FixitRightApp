@@ -18,7 +18,7 @@ export default function HomePage() {
     style={styles.container}
     colors={[ '#4A628A','#DFF2EB']} >
     <ScrollView>
-   
+     
 
   </ScrollView>
   </LinearGradient>
