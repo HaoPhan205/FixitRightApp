@@ -4,14 +4,16 @@ import { styles } from "@/style/homepage";
 import { LinearGradient } from 'expo-linear-gradient';
 import TaskBoard from '@/component/taskBoard';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { getServiceByStatus } from '@/api/ServiceApi/ServiceApi';
+import { getAverageRating, getServiceByStatus } from '@/api/ServiceApi/ServiceApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingScreen from '@/component/loadingScreen';
 import { Ionicons } from '@expo/vector-icons'; // Import Expo Vector Icons
+import RatingBoard from '@/component/ratingboard';
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const statusList = ['Pending', 'Accepted', 'Cancelled', 'Completed'];
+  const [averageRating, setAverageRating] = useState(0);
   const [categorizedServices, setCategorizedServices] = useState({
     Pending: [],
     Accepted: [],
@@ -46,7 +48,6 @@ export default function HomePage() {
                 return { status, data: response || [] };
               })
             );
-
             const categorized = responses.reduce((acc, { status, data }) => {
               acc[status] = data;
               return acc;
@@ -60,7 +61,20 @@ export default function HomePage() {
           setIsLoading(false);
         }
       };
-
+      const getRating = async () => {
+        try {
+          const localData = await AsyncStorage.getItem("user_profile");
+          if (localData) {
+            const user = JSON.parse(localData);
+            const data = await getAverageRating(user.Id);
+            console.log("Average Rating:", data);
+            setAverageRating(data);
+          }
+        } catch (error) {
+          console.error("Error fetching average rating:", error);
+        }
+      }
+      getRating()
       getAllServices();
     }, [])
   );
@@ -126,7 +140,10 @@ export default function HomePage() {
         >
           <NavButtons/>
           <TaskBoard data={categorizedServices} />
-
+          <RatingBoard
+            data={categorizedServices}
+            averageRating={averageRating}
+          />
          
         </LinearGradient>
       </ScrollView>

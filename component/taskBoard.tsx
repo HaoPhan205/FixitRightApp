@@ -10,6 +10,7 @@ const TaskBoard = ({ data }:any) => {
     { label: 'COMPLETED', count: data.Completed.length, color: '#00BFFF' },
     { label: 'CANCELLED', count: data.Cancelled.length, color: '#FF4040' },
   ];
+  //console.log(data.Completed?.reduce((rating:any)=>rating).length)
   const currentDate = new Date().toLocaleDateString('VN-vn', {
     year: 'numeric',
     month: 'long',
@@ -22,7 +23,7 @@ const TaskBoard = ({ data }:any) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Service Booking Stats</Text>
+        <Text style={styles.title}>Service Provided</Text>
         <Text style={styles.date}>{currentDate}</Text>
       </View>
 
