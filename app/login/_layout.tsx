@@ -1,6 +1,5 @@
-
-import React from 'react'
-import { Stack } from 'expo-router'
+import React from "react";
+import { Stack } from "expo-router";
 
 export default function _layout() {
   return (
@@ -9,15 +8,13 @@ export default function _layout() {
         headerShown: false,
       }}
     >
-        <Stack.Screen
+      <Stack.Screen
         name="signup"
         options={{
           title: "Register",
-          headerLeft: () => null, // Prevents default back button
+          headerLeft: () => null,
         }}
       />
     </Stack>
-
-   
-  )
+  );
 }
