@@ -142,12 +142,12 @@ export default function BookingDetail() {
 
   return (
     <LinearGradient style={styles.container} colors={["#4A628A", "#DFF2EB"]}>
+      <Image
+        source={{ uri: booking.Service.Image }}
+        style={styles.image}
+        resizeMode="cover"
+      />
       <ScrollView style={styles.contentContainer}>
-        <Image
-          source={{ uri: booking.Service.Image }}
-          style={styles.image}
-          resizeMode="cover"
-        />
         <View style={styles.whiteBackground}>
           <Text style={styles.title}>{booking.Service.Name}</Text>
           <Text style={styles.category}>
@@ -198,7 +198,6 @@ export default function BookingDetail() {
           )}
         </View>
 
-        {/* Modal xác nhận */}
         <Modal visible={confirmModal} transparent animationType="fade">
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
@@ -229,9 +228,9 @@ export default function BookingDetail() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f9fa", padding: 10 },
+  container: { flex: 1, backgroundColor: "#f8f9fa" },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  image: { width: "100%", height: 200, borderRadius: 10, marginBottom: 20 },
+  image: { width: "100%", height: 250 },
   title: { fontSize: 22, fontWeight: "bold", color: "#333", marginBottom: 10 },
   category: { fontSize: 16, color: "#666", marginBottom: 5 },
   price: {
