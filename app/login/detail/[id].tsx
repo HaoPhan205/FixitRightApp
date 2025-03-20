@@ -4,12 +4,29 @@ import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
 type BookingType = {
-  Id: number;
+  Id: string;
+  CustomerId: string;
+  MechanistId: string;
+  ServiceId: string;
+  Service: {
+    Name: string;
+    Image: string;
+    Id: string;
+    Description: string;
+    Price: string;
+    Active: boolean;
+    Category: {
+      Id: string;
+      Name: string;
+    };
+  };
+  Rating: number;
   Status: string;
   Address: string;
   WorkingDate: string;
   WorkingTime: string;
-  Service: { Name: string };
+  BookingDate: string;
+  Note: string;
 };
 
 type BookingDetailRouteProp = RouteProp<
