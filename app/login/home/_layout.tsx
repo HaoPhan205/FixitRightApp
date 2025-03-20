@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { styles } from "@/style/tabs";
+import { Alert } from "react-native";
 const tabIcons = {
   home: "home-outline",
   bookmark: "bookmark-outline",
@@ -65,7 +66,14 @@ export default function Layout() {
             />
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            Alert.alert("Thông báo", "Tính năng đang phát triển!");
+          },
+        })}
       />
+      ;
       <Tabs.Screen
         name="profile"
         options={{

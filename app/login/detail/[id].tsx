@@ -229,9 +229,9 @@ export default function BookingDetail() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f9fa", padding: 20 },
+  container: { flex: 1, backgroundColor: "#f8f9fa", padding: 10 },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  image: { width: "100%", height: 200, borderRadius: 10, marginBottom: 15 },
+  image: { width: "100%", height: 200, borderRadius: 10, marginBottom: 20 },
   title: { fontSize: 22, fontWeight: "bold", color: "#333", marginBottom: 10 },
   category: { fontSize: 16, color: "#666", marginBottom: 5 },
   price: {
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 10,
+    marginTop: 20,
   },
   button: {
     padding: 12,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   acceptButton: { backgroundColor: "#3C4D70" },
   cancelButton: { backgroundColor: "#dc3545" },
-  completeButton: { backgroundColor: "#007bff" },
+  completeButton: { backgroundColor: "#3C4D70" },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   modalOverlay: {
     flex: 1,
