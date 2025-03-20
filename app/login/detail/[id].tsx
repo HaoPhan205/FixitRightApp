@@ -8,10 +8,12 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 
 type BookingType = {
   Id: string;
@@ -43,40 +45,39 @@ export default function BookingDetail() {
   const [status, setStatus] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
       if (!id) {
-        Alert.alert("Lỗi", "ID đặt lịch không hợp lệ");
+        Alert.alert("Error", "Invalid booking ID");
         setLoading(false);
         return;
       }
 
       const tokenData = await AsyncStorage.getItem("access_token");
-      if (!tokenData) throw new Error("Không tìm thấy token");
+      if (!tokenData) throw new Error("Token not found");
 
       const AccessToken = JSON.parse(tokenData)?.AccessToken || tokenData;
       setAccessToken(AccessToken);
 
       try {
-        console.log("Đang lấy dữ liệu đặt lịch cho ID:", id);
         const response = await axios.get(
           `https://fixitright.azurewebsites.net/api/bookings/${id}`,
           {
             headers: { Authorization: `Bearer ${AccessToken}` },
           }
         );
-        console.log("API Response:", response.data);
 
         if (response.data && response.data.data) {
           setBooking(response.data.data);
           setStatus(response.data.data.Status);
         } else {
-          throw new Error("Cấu trúc phản hồi API không hợp lệ");
+          throw new Error("Invalid API response structure");
         }
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-        Alert.alert("Lỗi", "Không thể lấy thông tin đặt lịch");
+        Alert.alert("Error", "Failed to retrieve booking information");
       } finally {
         setLoading(false);
       }
@@ -85,14 +86,21 @@ export default function BookingDetail() {
     fetchBookingDetails();
   }, [id]);
 
-  const updateBookingStatus = async (newStatus: string) => {
-    if (status === newStatus) {
-      Alert.alert("Thông báo", "Trạng thái đã được cập nhật trước đó");
+  const handleStatusChange = (newStatus: string) => {
+    setSelectedStatus(newStatus);
+    setConfirmModal(true);
+  };
+
+  const confirmStatusChange = async () => {
+    setConfirmModal(false);
+
+    if (status === selectedStatus) {
+      Alert.alert("Notification", "The order has already been updated.");
       return;
     }
 
     const tokenData = await AsyncStorage.getItem("access_token");
-    if (!tokenData) throw new Error("Không tìm thấy token");
+    if (!tokenData) throw new Error("Token not found");
 
     const AccessToken = JSON.parse(tokenData)?.AccessToken || tokenData;
     setAccessToken(AccessToken);
@@ -100,28 +108,25 @@ export default function BookingDetail() {
     try {
       await axios.put(
         `https://fixitright.azurewebsites.net/api/bookings/${id}`,
-        { Status: newStatus },
+        { Status: selectedStatus },
         {
           headers: { Authorization: `Bearer ${AccessToken}` },
         }
       );
-      setStatus(newStatus);
-      Alert.alert(
-        "Thành công",
-        `Trạng thái đã được cập nhật thành ${newStatus}`
-      );
+      setStatus(selectedStatus);
+      Alert.alert("Success", `Order has been updated to ${selectedStatus}`);
 
-      if (newStatus === "Completed" || newStatus === "Cancelled") {
+      if (selectedStatus === "Completed" || selectedStatus === "Cancelled") {
         router.back();
       }
     } catch (error) {
-      Alert.alert("Lỗi", "Không thể cập nhật trạng thái đặt lịch");
+      Alert.alert("Error", "Failed to update booking status");
     }
   };
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#007BFF" />
       </View>
     );
@@ -129,76 +134,106 @@ export default function BookingDetail() {
 
   if (!booking) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Không tìm thấy thông tin đặt lịch</Text>
+      <View style={styles.loadingContainer}>
+        <Text style={styles.title}>Booking information not found</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Image
-        source={{ uri: booking.Service.Image }}
-        style={styles.image}
-        resizeMode="cover"
-      />
-      <Text style={styles.title}>{booking.Service.Name}</Text>
-      <Text style={styles.category}>
-        Category: {booking.Service.Category.Name}
-      </Text>
-      <Text style={styles.price}>Price: {booking.Service.Price} VND</Text>
-      <Text style={styles.description}>{booking.Service.Description}</Text>
+    <LinearGradient style={styles.container} colors={["#4A628A", "#DFF2EB"]}>
+      <ScrollView style={styles.contentContainer}>
+        <Image
+          source={{ uri: booking.Service.Image }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <View style={styles.whiteBackground}>
+          <Text style={styles.title}>{booking.Service.Name}</Text>
+          <Text style={styles.category}>
+            Category: {booking.Service.Category.Name}
+          </Text>
+          <Text style={styles.price}>Price: {booking.Service.Price} VND</Text>
+          <Text style={styles.description}>{booking.Service.Description}</Text>
 
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Address:</Text>
-        <Text style={styles.value}>{booking.Address}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Working Date:</Text>
-        <Text style={styles.value}>{booking.WorkingDate}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.label}>Working Time:</Text>
-        <Text style={styles.value}>{booking.WorkingTime}</Text>
-      </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Address:</Text>
+            <Text style={styles.value}>{booking.Address}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Working Date:</Text>
+            <Text style={styles.value}>{booking.WorkingDate}</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Working Time:</Text>
+            <Text style={styles.value}>{booking.WorkingTime}</Text>
+          </View>
 
-      <Text style={styles.status}>Status: {status}</Text>
-
-      <View style={styles.buttonContainer}>
-        {status === "Pending" && (
-          <>
+          <Text style={styles.status}>Status: {status}</Text>
+        </View>
+        <View style={styles.buttonContainer}>
+          {status === "Pending" && (
+            <>
+              <TouchableOpacity
+                style={[styles.button, styles.acceptButton]}
+                onPress={() => handleStatusChange("Accepted")}
+              >
+                <Text style={styles.buttonText}>Accept</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.cancelButton]}
+                onPress={() => handleStatusChange("Cancelled")}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {status === "Accepted" && (
             <TouchableOpacity
-              style={[styles.button, styles.acceptButton]}
-              onPress={() => updateBookingStatus("Accepted")}
+              style={[styles.button, styles.completeButton]}
+              onPress={() => handleStatusChange("Completed")}
             >
-              <Text style={styles.buttonText}>Accept</Text>
+              <Text style={styles.buttonText}>Complete</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelButton]}
-              onPress={() => updateBookingStatus("Cancelled")}
-            >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-          </>
-        )}
-        {status === "Accepted" && (
-          <TouchableOpacity
-            style={[styles.button, styles.completeButton]}
-            onPress={() => updateBookingStatus("Completed")}
-          >
-            <Text style={styles.buttonText}>Completed</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    </ScrollView>
+          )}
+        </View>
+
+        {/* Modal xác nhận */}
+        <Modal visible={confirmModal} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>
+                Are you sure you want to update status to "{selectedStatus}
+                "?
+              </Text>
+              <View style={styles.modalButtonContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.acceptButton]}
+                  onPress={confirmStatusChange}
+                >
+                  <Text style={styles.buttonText}>Confirm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={() => setConfirmModal(false)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", padding: 20 },
+  container: { flex: 1, backgroundColor: "#f8f9fa", padding: 20 },
+  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   image: { width: "100%", height: 200, borderRadius: 10, marginBottom: 15 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
-  category: { fontSize: 16, color: "#888", marginBottom: 5 },
+  title: { fontSize: 22, fontWeight: "bold", color: "#333", marginBottom: 10 },
+  category: { fontSize: 16, color: "#666", marginBottom: 5 },
   price: {
     fontSize: 18,
     fontWeight: "bold",
@@ -211,8 +246,8 @@ const styles = StyleSheet.create({
   value: { fontSize: 16 },
   status: {
     fontSize: 18,
-    color: "#007BFF",
     fontWeight: "bold",
+    color: "#007BFF",
     marginVertical: 15,
   },
   buttonContainer: {
@@ -227,8 +262,42 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     alignItems: "center",
   },
-  acceptButton: { backgroundColor: "#28a745" },
+  acceptButton: { backgroundColor: "#3C4D70" },
   cancelButton: { backgroundColor: "#dc3545" },
   completeButton: { backgroundColor: "#007bff" },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+    maxHeight: "80%",
+  },
+  modalText: { fontSize: 16, marginBottom: 20 },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  contentContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  whiteBackground: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
 });

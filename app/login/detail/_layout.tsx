@@ -11,11 +11,11 @@ export default function DetailLayout() {
         options={{
           headerShown: true,
           title: "Chi tiết sản phẩm",
-          headerStyle: { backgroundColor: "#ADD8E6" },
+          headerStyle: { backgroundColor: "#DFF2EB" },
           headerTitle: () => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text
-                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+                style={{ fontSize: 24, fontWeight: "bold", color: "black" }}
               >
                 Detail
               </Text>
@@ -26,7 +26,7 @@ export default function DetailLayout() {
               onPress={() => router.back()}
               style={{ paddingLeft: 10 }}
             >
-              <Ionicons name="arrow-back" size={24} color="white" />
+              <Ionicons name="arrow-back" size={24} color="DFF2EB" />
             </TouchableOpacity>
           ),
         }}
