@@ -17,7 +17,7 @@ export default function DetailLayout() {
               <Text
                 style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
               >
-                Chi tiết sản phẩm
+                Detail
               </Text>
             </View>
           ),
