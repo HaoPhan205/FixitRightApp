@@ -230,7 +230,12 @@ export default function BookingDetail() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8f9fa" },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
-  image: { width: "100%", height: 250 },
+  image: {
+    width: "100%",
+    height: 250,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
   title: { fontSize: 22, fontWeight: "bold", color: "#333", marginBottom: 10 },
   category: { fontSize: 16, color: "#666", marginBottom: 5 },
   price: {
