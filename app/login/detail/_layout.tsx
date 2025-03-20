@@ -1,24 +1,17 @@
+import React from "react";
 import { Stack, router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function Layout() {
+export default function DetailLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        gestureEnabled: true,
-        gestureDirection: "horizontal",
-        headerStyle: { backgroundColor: "#6ec2f7" },
-      }}
-    >
-      <Stack.Screen name="(tabs)" />
+    <Stack>
       <Stack.Screen
-        name="detail/[id]"
+        name="[id]"
         options={{
-          title: "Chi tiết sản phẩm",
           headerShown: true,
-          headerStyle: { backgroundColor: "#6ec2f7" },
+          title: "Chi tiết sản phẩm",
+          headerStyle: { backgroundColor: "#ADD8E6" },
           headerTitle: () => (
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text
@@ -29,7 +22,10 @@ export default function Layout() {
             </View>
           ),
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{ paddingLeft: 10 }}
+            >
               <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           ),

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import FastImage from "react-native-fast-image";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
@@ -44,10 +43,11 @@ export default function Booking() {
   const [loading, setLoading] = useState(true);
   const [mechanistId, setMechanistId] = useState<string | null>(null);
   const [filteredBookings, setFilteredBookings] = useState<BookingType[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState("Pending");
+
   const [error, setError] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const statusList = ["All", "Pending", "Completed", "Accepted", "Cancelled"];
+  const statusList = ["Pending", "Completed", "Accepted", "Cancelled"];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,21 +72,17 @@ export default function Booking() {
         setMechanistId(userId);
 
         const bookingRes = await axios.post(
-          `https://fixitright.azurewebsites.net/api/bookings/get-bookings-by-mechanist/${userId}`,
+          `https://fixitright.azurewebsites.net/api/bookings/get-bookings-by-mechanist/${userId}?Status=${selectedStatus}`,
           {},
           {
             headers: { Authorization: `Bearer ${AccessToken}` },
           }
         );
         const bookingData = bookingRes.data?.data?.Data;
-        if (
-          !Array.isArray(bookingData) ||
-          bookingData.some((item) => item === null || item === undefined)
-        ) {
+        if (!Array.isArray(bookingData)) {
           throw new Error("Invalid booking data format");
         }
         setBookings(bookingData);
-        setFilteredBookings(bookingData);
       } catch (error) {
         setError(
           error instanceof Error ? error.message : "An unknown error occurred"
@@ -97,31 +93,16 @@ export default function Booking() {
     };
 
     fetchData();
-  }, []);
+  }, [selectedStatus]);
 
   useEffect(() => {
-    console.log("Filtering bookings:", selectedStatus, bookings);
-
     if (!bookings || !Array.isArray(bookings)) {
-      console.error("Bookings is null or not an array", bookings);
       setFilteredBookings([]);
       return;
     }
 
-    if (selectedStatus === "All") {
-      setFilteredBookings(bookings);
-    } else {
-      const filtered = bookings.filter((item) => {
-        if (!item || !item.Status) {
-          console.warn("Skipping booking with invalid status:", item);
-          return false;
-        }
-        return item.Status === selectedStatus;
-      });
-
-      console.log("Filtered bookings:", filtered);
-      setFilteredBookings(filtered);
-    }
+    const filtered = bookings.filter((item) => item.Status === selectedStatus);
+    setFilteredBookings(filtered);
   }, [selectedStatus, bookings]);
 
   useEffect(() => {
@@ -168,14 +149,15 @@ export default function Booking() {
           data={filteredBookings}
           keyExtractor={(item) => item.Id}
           renderItem={({ item }) => {
-            if (!item || !item.Service) {
-              console.warn("Skipping invalid booking item:", item);
-              return null;
-            }
+            if (!item || !item.Service) return null;
             return (
               <TouchableOpacity
                 style={styles.card}
-                onPress={() => router.push(`/login/detail/${item.Id}`)}
+                onPress={() => {
+                  console.log("Booking ID:", item.Id);
+
+                  router.push(`/login/detail/${item.Id}`);
+                }}
               >
                 {item.Service?.Image ? (
                   <Image
@@ -284,5 +266,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#777",
     marginTop: 20,
+  },
+  imagePlaceholder: {
+    width: 100,
+    height: 100,
+    backgroundColor: "#ddd",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
   },
 });
