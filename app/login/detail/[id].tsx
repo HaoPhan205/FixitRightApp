@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  TextInput,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
@@ -47,7 +48,35 @@ export default function BookingDetail() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [formBooking, setFormBooking] = useState<any>({
+    Status: "Accepted",
+    MechanistId: "",
+    Warranty: "",
+    WorkingDate: "",
+    WorkingTime: "",
+    ServicePrice: 0,
+    AdditionalPrice: 0,
+    Note: "",
+  });
+  const asyncLoadDataUser = async () => {
+    try {
+      const tokenData = await AsyncStorage.getItem("access_token");
+      if (!tokenData) throw new Error("No token found");
+      const AccessToken = JSON.parse(tokenData)?.AccessToken || tokenData;
 
+      const userRes = await axios.get(
+        "https://fixitrightmma.azurewebsites.net/api/authentications/current-user",
+        {
+          headers: { Authorization: `Bearer ${AccessToken}` },
+        }
+      );
+      const userId = userRes.data?.data?.Id;
+      console.log({ userId });
+      setFormBooking((prev: any) => ({ ...prev, MechanistId: userId }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     const fetchBookingDetails = async () => {
       if (!id) {
@@ -64,12 +93,15 @@ export default function BookingDetail() {
 
       try {
         const response = await axios.get(
-          `https://fixitright.azurewebsites.net/api/bookings/${id}`,
+          `https://fixitrightmma.azurewebsites.net/api/bookings/${id}`,
           {
             headers: { Authorization: `Bearer ${AccessToken}` },
           }
         );
-
+        setFormBooking((prev: any) => ({
+          ...prev,
+          WorkingDate: response.data.data.WorkingDate,
+        }));
         if (response.data && response.data.data) {
           setBooking(response.data.data);
           setStatus(response.data.data.Status);
@@ -84,6 +116,7 @@ export default function BookingDetail() {
     };
 
     fetchBookingDetails();
+    asyncLoadDataUser();
   }, [id]);
 
   const handleStatusChange = (newStatus: string) => {
@@ -104,15 +137,34 @@ export default function BookingDetail() {
 
     const AccessToken = JSON.parse(tokenData)?.AccessToken || tokenData;
     setAccessToken(AccessToken);
-
     try {
-      await axios.put(
-        `https://fixitright.azurewebsites.net/api/bookings/${id}`,
-        { Status: selectedStatus },
-        {
-          headers: { Authorization: `Bearer ${AccessToken}` },
-        }
-      );
+      let apiUrl = "";
+
+      if (selectedStatus === "Cancelled") {
+        apiUrl = `https://fixitrightmma.azurewebsites.net/api/bookings/cancel-booking/${id}`;
+      } else if (selectedStatus === "Completed") {
+        apiUrl = `https://fixitrightmma.azurewebsites.net/api/bookings/complete-booking/${id}`;
+      } else {
+        apiUrl = `https://fixitrightmma.azurewebsites.net/api/bookings/${id}`;
+      }
+      if (selectedStatus === "Accepted") {
+        await axios.put(
+          apiUrl,
+          selectedStatus === "Accepted" ? formBooking : {},
+          {
+            headers: { Authorization: `Bearer ${AccessToken}` },
+          }
+        );
+      } else {
+        await axios.patch(
+          apiUrl,
+          selectedStatus === "Accepted" ? { Status: booking?.Status } : {},
+          {
+            headers: { Authorization: `Bearer ${AccessToken}` },
+          }
+        );
+      }
+
       setStatus(selectedStatus);
       Alert.alert("Success", `Order has been updated to ${selectedStatus}`);
 
@@ -120,6 +172,7 @@ export default function BookingDetail() {
         router.back();
       }
     } catch (error) {
+      console.log({ error: error.response });
       Alert.alert("Error", "Failed to update booking status");
     }
   };
@@ -153,7 +206,7 @@ export default function BookingDetail() {
           <Text style={styles.category}>
             Category: {booking.Service.Category.Name}
           </Text>
-          <Text style={styles.price}>Price: {booking.Service.Price} VND</Text>
+
           <Text style={styles.description}>{booking.Service.Description}</Text>
 
           <View style={styles.infoContainer}>
@@ -164,13 +217,74 @@ export default function BookingDetail() {
             <Text style={styles.label}>Working Date:</Text>
             <Text style={styles.value}>{booking.WorkingDate}</Text>
           </View>
-          <View style={styles.infoContainer}>
-            <Text style={styles.label}>Working Time:</Text>
-            <Text style={styles.value}>{booking.WorkingTime}</Text>
-          </View>
 
           <Text style={styles.status}>Status: {status}</Text>
         </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Note:</Text>
+          <TextInput
+            value={formBooking.Note}
+            style={styles.value}
+            onChangeText={(text) =>
+              setFormBooking((prev: any) => ({ ...prev, Note: text }))
+            }
+          />
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Working time:</Text>
+          <TextInput
+            value={formBooking.WorkingTime}
+            style={styles.value}
+            onChangeText={(text) =>
+              setFormBooking((prev: any) => ({
+                ...prev,
+                WorkingTime: text,
+              }))
+            }
+          />
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>Warranty:</Text>
+          <TextInput
+            value={formBooking.Warranty}
+            style={styles.value}
+            onChangeText={(text) =>
+              setFormBooking((prev: any) => ({
+                ...prev,
+                Warranty: text,
+              }))
+            }
+          />
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>ServicePrice:</Text>
+          <TextInput
+            keyboardType="numeric"
+            value={formBooking.ServicePrice}
+            style={styles.value}
+            onChangeText={(num) =>
+              setFormBooking((prev: any) => ({
+                ...prev,
+                ServicePrice: num,
+              }))
+            }
+          />
+        </View>
+
+        <View style={styles.infoContainer}>
+          <Text style={styles.label}>AdditionalPrice:</Text>
+          <TextInput
+            value={formBooking.AdditionalPrice}
+            style={styles.value}
+            onChangeText={(text) =>
+              setFormBooking((prev: any) => ({
+                ...prev,
+                AdditionalPrice: text,
+              }))
+            }
+          />
+        </View>
+
         <View style={styles.buttonContainer}>
           {status === "Pending" && (
             <>

@@ -75,7 +75,7 @@ export default function Booking() {
           setMechanistId(userId);
 
           const bookingRes = await axios.post(
-            `https://fixitright.azurewebsites.net/api/bookings/get-bookings-by-mechanist/${userId}?Status=${selectedStatus}`,
+            `https://fixitrightmma.azurewebsites.net/api/bookings/get-bookings-by-mechanist/${userId}?Status=${selectedStatus}`,
             {},
             {
               headers: { Authorization: `Bearer ${AccessToken}` },
@@ -189,7 +189,6 @@ export default function Booking() {
 
                     <Text>Address: {item.Address || "N/A"}</Text>
                     <Text>Working Date: {item.WorkingDate || "N/A"}</Text>
-                    <Text>Time: {item.WorkingTime || "N/A"}</Text>
                   </View>
                 </TouchableOpacity>
               );
