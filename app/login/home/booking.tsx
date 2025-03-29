@@ -65,7 +65,7 @@ export default function Booking() {
           setAccessToken(AccessToken);
 
           const userRes = await axios.get(
-            "https://fixitright.azurewebsites.net/api/authentications/current-user",
+            "https://fixitrightmma.azurewebsites.net/api/authentications/current-user",
             {
               headers: { Authorization: `Bearer ${AccessToken}` },
             }
