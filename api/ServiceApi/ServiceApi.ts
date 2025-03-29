@@ -5,10 +5,7 @@ const ratingURL = process.env.EXPO_PUBLIC_API_RATING_URL
 
 export const getServiceByStatus = async(statusQuery:string,accountId:string)=>{
     const headers = await getHeaders()
-    // console.log("statusQuery:",statusQuery)
-    // console.log("accountId:",accountId)
-    // console.log(`${serviceURL}/${accountId}?Status=${statusQuery}`)
-    //console.log(headers)
+
     try {
       const response = await axios.post(`${serviceURL}/${accountId}?Status=${statusQuery}`,{}, {
         headers: headers
