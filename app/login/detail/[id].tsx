@@ -58,6 +58,8 @@ export default function BookingDetail() {
     AdditionalPrice: 0,
     Note: "",
   });
+  const [loadingStatusChange, setLoadingStatusChange] = useState(false);
+
   const asyncLoadDataUser = async () => {
     try {
       const tokenData = await AsyncStorage.getItem("access_token");
@@ -131,6 +133,7 @@ export default function BookingDetail() {
       Alert.alert("Notification", "The order has already been updated.");
       return;
     }
+    setLoadingStatusChange(true);
 
     const tokenData = await AsyncStorage.getItem("access_token");
     if (!tokenData) throw new Error("Token not found");
@@ -172,7 +175,6 @@ export default function BookingDetail() {
         router.back();
       }
     } catch (error) {
-      console.log({ error: error.response });
       Alert.alert("Error", "Failed to update booking status");
     }
   };
@@ -206,9 +208,7 @@ export default function BookingDetail() {
           <Text style={styles.category}>
             Category: {booking.Service.Category.Name}
           </Text>
-
           <Text style={styles.description}>{booking.Service.Description}</Text>
-
           <View style={styles.infoContainer}>
             <Text style={styles.label}>Address:</Text>
             <Text style={styles.value}>{booking.Address}</Text>
@@ -217,72 +217,69 @@ export default function BookingDetail() {
             <Text style={styles.label}>Working Date:</Text>
             <Text style={styles.value}>{booking.WorkingDate}</Text>
           </View>
-
-          <Text style={styles.status}>Status: {status}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.label}>Note:</Text>
-          <TextInput
-            value={formBooking.Note}
-            style={styles.value}
-            onChangeText={(text) =>
-              setFormBooking((prev: any) => ({ ...prev, Note: text }))
-            }
-          />
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.label}>Working time:</Text>
-          <TextInput
-            value={formBooking.WorkingTime}
-            style={styles.value}
-            onChangeText={(text) =>
-              setFormBooking((prev: any) => ({
-                ...prev,
-                WorkingTime: text,
-              }))
-            }
-          />
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.label}>Warranty:</Text>
-          <TextInput
-            value={formBooking.Warranty}
-            style={styles.value}
-            onChangeText={(text) =>
-              setFormBooking((prev: any) => ({
-                ...prev,
-                Warranty: text,
-              }))
-            }
-          />
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.label}>ServicePrice:</Text>
-          <TextInput
-            keyboardType="numeric"
-            value={formBooking.ServicePrice}
-            style={styles.value}
-            onChangeText={(num) =>
-              setFormBooking((prev: any) => ({
-                ...prev,
-                ServicePrice: num,
-              }))
-            }
-          />
-        </View>
-
-        <View style={styles.infoContainer}>
-          <Text style={styles.label}>AdditionalPrice:</Text>
-          <TextInput
-            value={formBooking.AdditionalPrice}
-            style={styles.value}
-            onChangeText={(text) =>
-              setFormBooking((prev: any) => ({
-                ...prev,
-                AdditionalPrice: text,
-              }))
-            }
-          />
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Note:</Text>
+            <TextInput
+              value={formBooking.Note}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({ ...prev, Note: text }))
+              }
+            />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Working time:</Text>
+            <TextInput
+              value={formBooking.WorkingTime}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  WorkingTime: text,
+                }))
+              }
+            />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Warranty:</Text>
+            <TextInput
+              value={formBooking.Warranty}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  Warranty: text,
+                }))
+              }
+            />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>ServicePrice:</Text>
+            <TextInput
+              keyboardType="numeric"
+              value={formBooking.ServicePrice}
+              style={styles.valueInput}
+              onChangeText={(num) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  ServicePrice: parseFloat(num),
+                }))
+              }
+            />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>AdditionalPrice:</Text>
+            <TextInput
+              value={formBooking.AdditionalPrice}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  AdditionalPrice: parseFloat(text),
+                }))
+              }
+            />
+          </View>
         </View>
 
         <View style={styles.buttonContainer}>
@@ -316,15 +313,17 @@ export default function BookingDetail() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalText}>
-                Are you sure you want to update status to "{selectedStatus}
-                "?
+                Are you sure you want to update status to "{selectedStatus}"?
               </Text>
               <View style={styles.modalButtonContainer}>
                 <TouchableOpacity
                   style={[styles.button, styles.acceptButton]}
                   onPress={confirmStatusChange}
+                  disabled={loadingStatusChange}
                 >
-                  <Text style={styles.buttonText}>Confirm</Text>
+                  <Text style={styles.buttonText}>
+                    {loadingStatusChange ? "Updating..." : "Confirm"}
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.cancelButton]}
@@ -359,9 +358,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   description: { fontSize: 16, marginBottom: 20 },
-  infoContainer: { flexDirection: "row", marginBottom: 10 },
-  label: { fontWeight: "bold", fontSize: 16, marginRight: 5 },
-  value: { fontSize: 16 },
+  infoContainer: { flexDirection: "column", marginBottom: 12 },
+  label: {
+    width: 100,
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  valueInput: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    fontSize: 16,
+    marginTop: 4,
+    width: "100%",
+  },
+
+  value: { fontSize: 16, flex: 1 },
   status: {
     fontSize: 18,
     fontWeight: "bold",
