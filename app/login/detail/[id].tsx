@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  TextInput,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import axios from "axios";
@@ -47,7 +48,37 @@ export default function BookingDetail() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [confirmModal, setConfirmModal] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [formBooking, setFormBooking] = useState<any>({
+    Status: "Accepted",
+    MechanistId: "",
+    Warranty: "",
+    WorkingDate: "",
+    WorkingTime: "",
+    ServicePrice: 0,
+    AdditionalPrice: 0,
+    Note: "",
+  });
+  const [loadingStatusChange, setLoadingStatusChange] = useState(false);
 
+  const asyncLoadDataUser = async () => {
+    try {
+      const tokenData = await AsyncStorage.getItem("access_token");
+      if (!tokenData) throw new Error("No token found");
+      const AccessToken = JSON.parse(tokenData)?.AccessToken || tokenData;
+
+      const userRes = await axios.get(
+        "https://fixitrightmma.azurewebsites.net/api/authentications/current-user",
+        {
+          headers: { Authorization: `Bearer ${AccessToken}` },
+        }
+      );
+      const userId = userRes.data?.data?.Id;
+      console.log({ userId });
+      setFormBooking((prev: any) => ({ ...prev, MechanistId: userId }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     const fetchBookingDetails = async () => {
       if (!id) {
@@ -64,12 +95,15 @@ export default function BookingDetail() {
 
       try {
         const response = await axios.get(
-          `https://fixitright.azurewebsites.net/api/bookings/${id}`,
+          `https://fixitrightmma.azurewebsites.net/api/bookings/${id}`,
           {
             headers: { Authorization: `Bearer ${AccessToken}` },
           }
         );
-
+        setFormBooking((prev: any) => ({
+          ...prev,
+          WorkingDate: response.data.data.WorkingDate,
+        }));
         if (response.data && response.data.data) {
           setBooking(response.data.data);
           setStatus(response.data.data.Status);
@@ -84,6 +118,7 @@ export default function BookingDetail() {
     };
 
     fetchBookingDetails();
+    asyncLoadDataUser();
   }, [id]);
 
   const handleStatusChange = (newStatus: string) => {
@@ -98,21 +133,41 @@ export default function BookingDetail() {
       Alert.alert("Notification", "The order has already been updated.");
       return;
     }
+    setLoadingStatusChange(true);
 
     const tokenData = await AsyncStorage.getItem("access_token");
     if (!tokenData) throw new Error("Token not found");
 
     const AccessToken = JSON.parse(tokenData)?.AccessToken || tokenData;
     setAccessToken(AccessToken);
-
     try {
-      await axios.put(
-        `https://fixitright.azurewebsites.net/api/bookings/${id}`,
-        { Status: selectedStatus },
-        {
-          headers: { Authorization: `Bearer ${AccessToken}` },
-        }
-      );
+      let apiUrl = "";
+
+      if (selectedStatus === "Cancelled") {
+        apiUrl = `https://fixitrightmma.azurewebsites.net/api/bookings/cancel-booking/${id}`;
+      } else if (selectedStatus === "Completed") {
+        apiUrl = `https://fixitrightmma.azurewebsites.net/api/bookings/complete-booking/${id}`;
+      } else {
+        apiUrl = `https://fixitrightmma.azurewebsites.net/api/bookings/${id}`;
+      }
+      if (selectedStatus === "Accepted") {
+        await axios.put(
+          apiUrl,
+          selectedStatus === "Accepted" ? formBooking : {},
+          {
+            headers: { Authorization: `Bearer ${AccessToken}` },
+          }
+        );
+      } else {
+        await axios.patch(
+          apiUrl,
+          selectedStatus === "Accepted" ? { Status: booking?.Status } : {},
+          {
+            headers: { Authorization: `Bearer ${AccessToken}` },
+          }
+        );
+      }
+
       setStatus(selectedStatus);
       Alert.alert("Success", `Order has been updated to ${selectedStatus}`);
 
@@ -153,9 +208,7 @@ export default function BookingDetail() {
           <Text style={styles.category}>
             Category: {booking.Service.Category.Name}
           </Text>
-          <Text style={styles.price}>Price: {booking.Service.Price} VND</Text>
           <Text style={styles.description}>{booking.Service.Description}</Text>
-
           <View style={styles.infoContainer}>
             <Text style={styles.label}>Address:</Text>
             <Text style={styles.value}>{booking.Address}</Text>
@@ -165,12 +218,70 @@ export default function BookingDetail() {
             <Text style={styles.value}>{booking.WorkingDate}</Text>
           </View>
           <View style={styles.infoContainer}>
-            <Text style={styles.label}>Working Time:</Text>
-            <Text style={styles.value}>{booking.WorkingTime}</Text>
+            <Text style={styles.label}>Note:</Text>
+            <TextInput
+              value={formBooking.Note}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({ ...prev, Note: text }))
+              }
+            />
           </View>
-
-          <Text style={styles.status}>Status: {status}</Text>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Working time:</Text>
+            <TextInput
+              value={formBooking.WorkingTime}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  WorkingTime: text,
+                }))
+              }
+            />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Warranty:</Text>
+            <TextInput
+              value={formBooking.Warranty}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  Warranty: text,
+                }))
+              }
+            />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>ServicePrice:</Text>
+            <TextInput
+              keyboardType="numeric"
+              value={formBooking.ServicePrice}
+              style={styles.valueInput}
+              onChangeText={(num) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  ServicePrice: parseFloat(num),
+                }))
+              }
+            />
+          </View>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>AdditionalPrice:</Text>
+            <TextInput
+              value={formBooking.AdditionalPrice}
+              style={styles.valueInput}
+              onChangeText={(text) =>
+                setFormBooking((prev: any) => ({
+                  ...prev,
+                  AdditionalPrice: parseFloat(text),
+                }))
+              }
+            />
+          </View>
         </View>
+
         <View style={styles.buttonContainer}>
           {status === "Pending" && (
             <>
@@ -202,15 +313,17 @@ export default function BookingDetail() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Text style={styles.modalText}>
-                Are you sure you want to update status to "{selectedStatus}
-                "?
+                Are you sure you want to update status to "{selectedStatus}"?
               </Text>
               <View style={styles.modalButtonContainer}>
                 <TouchableOpacity
                   style={[styles.button, styles.acceptButton]}
                   onPress={confirmStatusChange}
+                  disabled={loadingStatusChange}
                 >
-                  <Text style={styles.buttonText}>Confirm</Text>
+                  <Text style={styles.buttonText}>
+                    {loadingStatusChange ? "Updating..." : "Confirm"}
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.button, styles.cancelButton]}
@@ -245,9 +358,24 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   description: { fontSize: 16, marginBottom: 20 },
-  infoContainer: { flexDirection: "row", marginBottom: 10 },
-  label: { fontWeight: "bold", fontSize: 16, marginRight: 5 },
-  value: { fontSize: 16 },
+  infoContainer: { flexDirection: "column", marginBottom: 12 },
+  label: {
+    width: 100,
+    fontWeight: "bold",
+    fontSize: 12,
+  },
+  valueInput: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    fontSize: 16,
+    marginTop: 4,
+    width: "100%",
+  },
+
+  value: { fontSize: 16, flex: 1 },
   status: {
     fontSize: 18,
     fontWeight: "bold",
